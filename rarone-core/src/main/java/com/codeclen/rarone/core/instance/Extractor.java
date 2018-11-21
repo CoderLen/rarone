@@ -1,6 +1,9 @@
 package com.codeclen.rarone.core.instance;
 
 import com.alibaba.fastjson.JSON;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -14,7 +17,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -30,7 +35,21 @@ public class Extractor {
 
     public enum ResponseType{
         JSON,
-        HTML;
+        HTML,
+        ASYNHTML;
+    }
+
+    private static WebClient webClient;
+
+    static {
+        webClient = new WebClient(BrowserVersion.CHROME);
+        webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setActiveXNative(false);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        webClient.getOptions().setTimeout(10000);
     }
 
     /**
@@ -42,8 +61,12 @@ public class Extractor {
     protected String request(@NonNull String url, Map<String, Object> params){
         if(this.responseType == ResponseType.JSON){
             return requestJson(url, params);
-        }else {
+        }else if(this.responseType == ResponseType.HTML && params != null){
             return requestHtml(url, params);
+        }else if(this.responseType == ResponseType.ASYNHTML){
+            return requestByHttpUnit(url);
+        }else {
+            throw new IllegalArgumentException("Not support!");
         }
     }
 
@@ -108,6 +131,30 @@ public class Extractor {
             request.abort();
         }
         return null;
+    }
+
+    /**
+     * 利用HttpUnit加载页面，可实现等待js异步渲染页面
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public String requestByHttpUnit(String url) {
+        HtmlPage htmlPage = null;
+        try {
+            htmlPage = webClient.getPage(url);
+            webClient.waitForBackgroundJavaScript(2000);
+            String htmlString = htmlPage.asXml();
+            return htmlString;
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(), e);
+            return "";
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return "";
+        } finally {
+            webClient.close();
+        }
     }
 
 

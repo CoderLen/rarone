@@ -63,8 +63,10 @@ public abstract class MultiExtractor extends Extractor {
             String response = null;
             if(responseType == ResponseType.JSON){
                 response = request(url, params);
-            }else if(responseType == ResponseType.HTML){
+            }else if(responseType == ResponseType.HTML && params != null && params.size() > 0){
                 response = requestHtml(url, params);
+            }else {
+                response = requestByHttpUnit(url);
             }
             if(response != null){
                 return extract(response);

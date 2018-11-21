@@ -20,15 +20,14 @@ public class BthRoomExtractorTest {
     public void test(){
         BthRoomExtractor bthRoomExtractor = new BthRoomExtractor();
         Map<String,Object> params = new HashMap<>();
-        params.put("ArrDate","2018-11-20");
-        params.put("DepDate","2018-11-21");
-        params.put("hotelCd","020063");
-        params.put("PriceType", "");
-        params.put("memberNo", "");
-
-        Page<Room> cityList = bthRoomExtractor.run("http://www.bthhotels.com/HotelAct/HotelRomList", params);
+//        params.put("ArrDate","2018-11-21");
+//        params.put("DepDate","2018-11-21");
+//        params.put("hotelCd","020017");
+//        params.put("PriceType", "");
+//        params.put("memberNo", "");
+        Page<Room> cityList = bthRoomExtractor.run("http://www.bthhotels.com/hotel/020017");
         cityList.getData().stream().forEach(city -> {
-            System.out.println(JSON.toJSONString(city));
+            System.out.println(JSON.toJSONString(city, true));
         });
     }
 }

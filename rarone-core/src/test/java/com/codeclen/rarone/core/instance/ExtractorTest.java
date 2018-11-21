@@ -6,6 +6,9 @@ import com.codeclen.rarone.core.Page;
 import com.codeclen.rarone.core.instance.bestwehotel.extract.BestwehotelCityExtractor;
 import com.codeclen.rarone.core.instance.bestwehotel.extract.BestwehotelHotelExtractor;
 import com.codeclen.rarone.core.pipeline.impl.BestwehotelHotelPipeline;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.steadystate.css.parser.CSSOMParser;
 import lombok.NonNull;
 import net.sourceforge.tess4j.ITesseract;
@@ -240,4 +243,26 @@ public class ExtractorTest {
         return roomRates;
     }
 
+
+    @Test
+    public void testConnect() throws IOException {
+        WebClient webClient = new WebClient(BrowserVersion.CHROME);
+        webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setActiveXNative(false);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        webClient.getOptions().setTimeout(10000);
+        HtmlPage htmlPage = null;
+        try {
+            htmlPage = webClient.getPage("http://www.bthhotels.com/hotel/020063");
+            webClient.waitForBackgroundJavaScript(2000);
+            String htmlString = htmlPage.asXml();
+            Document document = Jsoup.parse(htmlString);
+            System.out.println(document);
+        } finally {
+            webClient.close();
+        }
+    }
 }
