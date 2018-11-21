@@ -1,9 +1,12 @@
 package com.codeclen.rarone.core.instance;
 
+import lombok.Data;
+
 /**
  * @author lin
  * @since 2018/11/15.
  */
+@Data
 public class Comment {
 
     private String hotelId;
@@ -16,66 +19,16 @@ public class Comment {
 
     private String nickname;
 
+    /**
+     * 酒店回复
+     */
+    private String hotelReply;
+
     private Long replyTime;
 
     /**
      * 评论类型，0：好评，1:中评，2：差评
      */
-    private Integer entireScore;
+    private Double entireScore;
 
-    public String getHotelId() {
-        return hotelId;
-    }
-
-    public void setHotelId(String hotelId) {
-        this.hotelId = hotelId;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Double getScore() {
-        return score;
-    }
-
-    public void setScore(Double score) {
-        this.score = score;
-    }
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public Long getReplyTime() {
-        return replyTime;
-    }
-
-    public void setReplyTime(Long replyTime) {
-        this.replyTime = replyTime;
-    }
-
-    public Integer getEntireScore() {
-        return entireScore;
-    }
-
-    public void setEntireScore(Integer entireScore) {
-        this.entireScore = entireScore;
-    }
 }

@@ -46,7 +46,7 @@ public class BestwehotelCommentExtractor extends AbstractRoomExtractor {
                                     comment.setReplyTime(replyTime);
                                 }
                             }
-                            comment.setEntireScore(commentObj.getInteger("entireScore"));
+                            comment.setEntireScore(commentObj.getDouble("entireScore"));
                             res.add(comment);
                         }
                     }

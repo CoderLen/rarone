@@ -32,25 +32,35 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
  * @author lin
  * @since 2018/11/16.
  */
 @Slf4j
 public class BthRoomExtractor extends AbstractHotelExtractor {
 
-    private static final String HOTEL_ROOM_LIST_URL = "http://www.bthhotels.com/HotelAct/HotelRomList";
+    private static Pattern pattern = Pattern.compile("[0-9]+");
+    private ThreadLocal<ITesseract> tesseractThreadLocal = new ThreadLocal<>();
 
-    private BthHotelDetailExtractor hotelDetailExtractor = new BthHotelDetailExtractor();
     {
+        ITesseract instance = new Tesseract();
+        URL url = ClassLoader.getSystemResource("tessdata");
+        String path = url.getPath().substring(1);
+        instance.setLanguage("num");
+        instance.setDatapath(path);
+        tesseractThreadLocal.set(instance);
         this.responseType = ResponseType.ASYNHTML;
     }
 
-    private static Pattern pattern = Pattern.compile("[0-9]+");
-
-
-    private Map<String,ImagePosition> getPriceClazzMap(Document doc) throws IOException {
+    /**
+     * 获取价格样式名称以及其对应的图片位置信息
+     *
+     * @param doc
+     * @return
+     * @throws IOException
+     */
+    private Map<String, ImagePosition> getPriceClazzMap(Document doc) throws IOException {
         Map<String, ImagePosition> classValMap = new HashMap<>();
+        //获取样式表
         Elements elements = doc.head().select("style");
         InputSource source = new InputSource(new StringReader(elements.toString()));
         CSSOMParser parser = new CSSOMParser();
@@ -63,40 +73,42 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
             //获取样式内容
             CSSStyleRule styleRule = (CSSStyleRule) rule;
             String image = styleRule.getStyle().getPropertyValue("background-image");
-            if(StringUtils.isNotEmpty(image)){
-                String imageURL = image.replace("url(","").replace(")","");
+            if (StringUtils.isNotEmpty(image)) {
+                String imageURL = image.replace("url(", "").replace(")", "");
                 BufferedImage img = ImageIO.read(new URL(imageURL));
 //                FileUtils.copyInputStreamToFile(new URL(imageURL).openConnection().getInputStream(), new File("G:\\test\\images\\" + System.currentTimeMillis()+".png"));
                 String[] selectors = styleRule.getSelectorText().split(",");
-                for(String selector : selectors){
+                for (String selector : selectors) {
                     clazzValMap.put(selector.trim(), img);
                 }
-            }else {
+            } else {
                 CSSStyleDeclaration cssStyleDeclaration = styleRule.getStyle();
                 String selector = styleRule.getSelectorText();
                 String position = cssStyleDeclaration.getPropertyValue("background-position");
-                if(StringUtils.isNotEmpty(position) && clazzValMap.containsKey(selector)){
+                if (StringUtils.isNotEmpty(position) && clazzValMap.containsKey(selector)) {
                     BufferedImage img = clazzValMap.get(selector);
                     String[] xy = position.split("\\s+");
-                    if(xy.length == 2){
-                        Integer x = 0-Integer.parseInt(xy[0].replace("px",""));
-                        Integer y = 0-Integer.parseInt(xy[1].replace("px",""));
+                    if (xy.length == 2) {
+                        Integer x = 0 - Integer.parseInt(xy[0].replace("px", ""));
+                        Integer y = 0 - Integer.parseInt(xy[1].replace("px", ""));
                         Rectangle rectangle = new Rectangle(x, y, 12, 25);
                         ImagePosition imagePosition = new ImagePosition();
                         imagePosition.setBufferedImage(img);
                         imagePosition.setRectangle(rectangle);
                         imagePosition.setSeletor(selector);
-                        classValMap.put(selector.replace(".",""), imagePosition);
-                    }else {
+                        classValMap.put(selector.replace(".", ""), imagePosition);
+                    } else {
                         log.warn("illegal position: {}", position);
                     }
-                }else {
+                } else {
                     log.warn("没找到对应的class: {}", selector);
                 }
             }
         }
         return classValMap;
     }
+
+
     @Override
     public Page<Room> extract(String html) {
         Page<Room> page = new Page<>();
@@ -109,12 +121,6 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
             Map<String, ImagePosition> priceMap = getPriceClazzMap(document);
             Elements elements = document.select("#roomTypeContanner > div > div.list_roomtype > div.list_room_tj_row");
 
-            ITesseract instance = new Tesseract();
-            URL url = ClassLoader.getSystemResource("tessdata");
-            String path = url.getPath().substring(1);
-            instance.setLanguage("num");
-            instance.setDatapath(path);
-
             elements.forEach(element -> {
                 Elements roomTypeVal = element.select("ul.list_room_w236 > dl.list_room_intro > dt:nth-child(1)");
                 String roomType = roomTypeVal.text();
@@ -126,10 +132,10 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
                 room.setRoomSize(roomSize);
                 room.setRoomType(roomType);
                 Matcher matcher = pattern.matcher(maxCheckInVal);
-                room.setMaxCheckin(matcher.find() ? Integer.parseInt(matcher.group()): 0);
+                room.setMaxCheckin(matcher.find() ? Integer.parseInt(matcher.group()) : 0);
                 String image = element.select(".list_room_img").attr("src_img");
                 room.setImage(image);
-                List<RoomRate> roomRates = extractRoomRates(element, priceMap, instance);
+                List<RoomRate> roomRates = extractRoomRates(element, priceMap);
                 room.setRoomRates(roomRates);
                 rooms.add(room);
             });
@@ -139,7 +145,7 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
         return page;
     }
 
-    public List<RoomRate> extractRoomRates(Element roomEle, Map<String, ImagePosition> priceMap, ITesseract instance){
+    public List<RoomRate> extractRoomRates(Element roomEle, Map<String, ImagePosition> priceMap) {
         List<RoomRate> roomRates = new LinkedList<>();
         Elements roomPriceEls = roomEle.select(".list_room_fixbox").select(".list_room_fix");
         roomPriceEls.forEach(element -> {
@@ -150,22 +156,22 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
             StringBuffer priceBuf = new StringBuffer();
             priceEls.forEach(e -> {
                 String className = e.className();
-                if(priceMap.containsKey(className)){
+                if (priceMap.containsKey(className)) {
                     ImagePosition imagePosition = priceMap.get(className);
                     try {
-                        String text = instance.doOCR(imagePosition.getBufferedImage(), imagePosition.getRectangle());
+                        String text = tesseractThreadLocal.get().doOCR(imagePosition.getBufferedImage(), imagePosition.getRectangle());
                         priceBuf.append(text.trim());
                     } catch (TesseractException e1) {
                         log.error(e1.getMessage(), e1);
                     }
-                }else {
+                } else {
                     log.error("Can not found class val: " + className);
                 }
             });
-            if(priceBuf.length() > 0){
+            if (priceBuf.length() > 0) {
                 try {
                     roomRate.setSellingRate(Double.parseDouble(priceBuf.toString()));
-                }catch (Exception e){
+                } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
             }
@@ -173,7 +179,6 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
         });
         return roomRates;
     }
-
 
 
 }

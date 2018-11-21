@@ -61,7 +61,7 @@ public class Extractor {
     protected String request(@NonNull String url, Map<String, Object> params){
         if(this.responseType == ResponseType.JSON){
             return requestJson(url, params);
-        }else if(this.responseType == ResponseType.HTML && params != null){
+        }else if(this.responseType == ResponseType.HTML){
             return requestHtml(url, params);
         }else if(this.responseType == ResponseType.ASYNHTML){
             return requestByHttpUnit(url);
@@ -152,8 +152,6 @@ public class Extractor {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             return "";
-        } finally {
-            webClient.close();
         }
     }
 

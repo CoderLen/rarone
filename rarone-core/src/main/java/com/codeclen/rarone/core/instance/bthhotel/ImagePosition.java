@@ -12,10 +12,19 @@ import java.awt.image.BufferedImage;
 @Data
 public class ImagePosition {
 
+    /**
+     * 图片BufferedImage对象
+     */
     private BufferedImage bufferedImage;
 
+    /**
+     * 图片中位置信息
+     */
     private Rectangle rectangle;
 
+    /**
+     * 对应classs属性
+     */
     private String seletor;
 
 

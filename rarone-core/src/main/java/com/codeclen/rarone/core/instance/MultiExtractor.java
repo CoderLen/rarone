@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 信息列表抽取
  * @author lin
  * @since 2018/11/16.
  */

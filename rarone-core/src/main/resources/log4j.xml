@@ -35,6 +35,10 @@
         </filter>
     </appender>
 
+    <logger name="com.gargoylesoftware.htmlunit" additivity="false">
+        <level value="ERROR"/>
+    </logger>
+
     <appender name="async_file" class="org.apache.log4j.AsyncAppender">
         <param name="BufferSize" value="16384"/>
         <appender-ref ref="A1"/>
