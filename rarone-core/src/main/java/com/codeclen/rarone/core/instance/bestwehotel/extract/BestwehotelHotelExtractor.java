@@ -6,6 +6,7 @@ import com.codeclen.rarone.core.Page;
 import com.codeclen.rarone.core.instance.AbstractHotelDetailExtractor;
 import com.codeclen.rarone.core.instance.AbstractHotelExtractor;
 import com.codeclen.rarone.core.instance.Hotel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author lin
  * @since 2018/11/14.
  */
+@Slf4j
 public class BestwehotelHotelExtractor extends AbstractHotelExtractor {
 
     private AbstractHotelDetailExtractor<Hotel> hotelDetailExtractor = new BestwehotelHotelDetailExtractor("http://hotel.bestwehotel.com/api/hotel/queryHotelDetail");
@@ -49,7 +51,7 @@ public class BestwehotelHotelExtractor extends AbstractHotelExtractor {
                 }
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return page;
     }

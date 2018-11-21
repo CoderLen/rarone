@@ -5,6 +5,7 @@ import com.codeclen.rarone.core.instance.AbstractHotelExtractor;
 import com.codeclen.rarone.core.instance.Room;
 import com.codeclen.rarone.core.instance.RoomRate;
 import com.steadystate.css.parser.CSSOMParser;
+import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -39,6 +40,7 @@ import java.util.regex.Pattern;
  * @author lin
  * @since 2018/11/16.
  */
+@Slf4j
 public class BthRoomExtractor extends AbstractHotelExtractor {
 
     private static final String HOTEL_ROOM_LIST_URL = "http://www.bthhotels.com/HotelAct/HotelRomList";
@@ -105,7 +107,7 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
                 }
             }
         }catch (Exception e){
-
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -151,10 +153,10 @@ public class BthRoomExtractor extends AbstractHotelExtractor {
                 if(classValMap.containsKey(className)){
                     priceBuf.append(classValMap.get(className));
                 }else {
-                    System.out.println("Can not found class val: " + className);
+                    log.error("Can not found class val: " + className);
                 }
             });
-            System.out.println(priceBuf.toString());
+            log.info(priceBuf.toString());
         });
 
         return roomRates;

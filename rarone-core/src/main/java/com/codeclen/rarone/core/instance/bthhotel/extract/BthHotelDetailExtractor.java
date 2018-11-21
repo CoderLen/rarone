@@ -2,6 +2,7 @@ package com.codeclen.rarone.core.instance.bthhotel.extract;
 
 import com.codeclen.rarone.core.instance.AbstractHotelDetailExtractor;
 import com.codeclen.rarone.core.instance.Hotel;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @author lin
  * @since 2018/11/16.
  */
+@Slf4j
 public class BthHotelDetailExtractor extends AbstractHotelDetailExtractor<Hotel> {
 
     private static final String LOWCATE = "经济型";
@@ -53,7 +55,7 @@ public class BthHotelDetailExtractor extends AbstractHotelDetailExtractor<Hotel>
                 String special = doc.select("body > div.main_pc > div.popup_mask.Hotel_Details_mask > p:nth-child(7)").text();
 
             }else {
-                System.out.println("Unknown Primary Category: " + primaryCate);
+                log.error("Unknown Primary Category: " + primaryCate);
             }
         }
         return hotel;

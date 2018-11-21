@@ -3,6 +3,7 @@ package com.codeclen.rarone.core.instance.bestwehotel.extract;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.codeclen.rarone.core.instance.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author lin
  * @since 2018/11/14.
  */
+@Slf4j
 public class BestwehotelHotelDetailExtractor extends AbstractHotelDetailExtractor<Hotel> {
 
     public BestwehotelHotelDetailExtractor(String url) {
@@ -47,7 +49,7 @@ public class BestwehotelHotelDetailExtractor extends AbstractHotelDetailExtracto
                 }
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return hotel;
     }

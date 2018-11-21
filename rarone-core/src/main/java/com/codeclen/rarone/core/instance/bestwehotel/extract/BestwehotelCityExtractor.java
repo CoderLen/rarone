@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.codeclen.rarone.core.City;
 import com.codeclen.rarone.core.Page;
 import com.codeclen.rarone.core.instance.AbstractCityExtractor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * @author lin
  * @since 2018/11/14.
  */
+@Slf4j
 public class BestwehotelCityExtractor extends AbstractCityExtractor {
 
     @Override
@@ -47,7 +49,7 @@ public class BestwehotelCityExtractor extends AbstractCityExtractor {
                 }
             }
         }catch (Exception e){
-
+            log.error(e.getMessage(), e);
         }
         page.setData(cities);
         return page;

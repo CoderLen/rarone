@@ -2,6 +2,7 @@ package com.codeclen.rarone.core.instance;
 
 import com.alibaba.fastjson.JSON;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -21,6 +22,7 @@ import java.util.Map;
  * @author lin
  * @since 2018/11/14.
  */
+@Slf4j
 public class Extractor {
 
 
@@ -67,7 +69,7 @@ public class Extractor {
             String resStr = EntityUtils.toString(responseEntity, "UTF-8");
             return resStr;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } finally {
             request.abort();
         }
@@ -92,7 +94,7 @@ public class Extractor {
             try {
                 request.setEntity(new UrlEncodedFormEntity(postParameters, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
         try {
@@ -101,7 +103,7 @@ public class Extractor {
             String resStr = EntityUtils.toString(responseEntity, "UTF-8");
             return resStr;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } finally {
             request.abort();
         }

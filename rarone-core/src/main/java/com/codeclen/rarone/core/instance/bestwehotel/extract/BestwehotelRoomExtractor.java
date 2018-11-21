@@ -6,6 +6,7 @@ import com.codeclen.rarone.core.Page;
 import com.codeclen.rarone.core.instance.AbstractRoomExtractor;
 import com.codeclen.rarone.core.instance.Room;
 import com.codeclen.rarone.core.instance.RoomRate;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author lin
  * @since 2018/11/14.
  */
+@Slf4j
 public class BestwehotelRoomExtractor extends AbstractRoomExtractor {
 
 
@@ -42,7 +44,7 @@ public class BestwehotelRoomExtractor extends AbstractRoomExtractor {
                 }
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return page;
     }
