@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Hotel {
 
-    class Coordinate{
+    public static class Coordinate{
         private double lat;
 
         private double lng;
@@ -27,6 +27,15 @@ public class Hotel {
 
         public void setLng(double lng) {
             this.lng = lng;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuffer sb = new StringBuffer("[");
+            sb.append(lat).append(",");
+            sb.append(lng);
+            sb.append(']');
+            return sb.toString();
         }
     }
 

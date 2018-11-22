@@ -1,8 +1,10 @@
 package com.codeclen.rarone.core.instance.bthhotel.extract;
 
 import com.codeclen.rarone.core.instance.AbstractHotelDetailExtractor;
+import com.codeclen.rarone.core.instance.Facility;
 import com.codeclen.rarone.core.instance.Hotel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -35,11 +37,29 @@ public class BthHotelDetailExtractor extends AbstractHotelDetailExtractor<Hotel>
             hotels.add(hotel);
             //酒店类型：经济型，高端
             String primaryCate = doc.select("#hotelPrimaryCategory_pVar").val();
+            hotel.setLevel(primaryCate);
+            //酒店品牌
+            String brand = doc.select("#hotelSecondaryCategory_pVar").val();
+            hotel.setSecondBrand(brand);
             if (LOWCATE.equalsIgnoreCase(primaryCate)) {
                 String facStrs = doc.select("body > div.main_pc > div:nth-child(3) > div.list_introduce.main_w1200 > div.list_introduce_l.fl > div.list_intro_text.fix").text();
+                if(StringUtils.isNotEmpty(facStrs)){
+                    String[] facArr = facStrs.split("\\s+");
+                    List<Facility> facilities = new LinkedList<>();
+                    for(String fac : facArr){
+                        if(StringUtils.isNotEmpty(fac)){
+                            Facility facility = new Facility();
+                            facility.setName(fac);
+                            facility.setHotelId(hotel.getHid());
+                            facilities.add(facility);
+                        }
+                    }
+                    hotel.setFacilities(facilities);
+                }
                 String phone = doc.select("#information > div:nth-child(2)").text();
                 String descript = doc.select("#information > div:nth-child(3)").text();
                 String tips = doc.select("#information > div:nth-child(4)").text();
+                hotel.setPolicy(tips);
                 hotel.setDescribe(descript);
                 hotel.setPhone(phone);
             }else if(HIGHCATE.equalsIgnoreCase(primaryCate)){

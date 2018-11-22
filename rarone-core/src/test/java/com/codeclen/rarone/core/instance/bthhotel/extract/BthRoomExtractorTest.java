@@ -25,7 +25,7 @@ public class BthRoomExtractorTest {
 //        params.put("hotelCd","020017");
 //        params.put("PriceType", "");
 //        params.put("memberNo", "");
-        Page<Room> cityList = bthRoomExtractor.run("http://www.bthhotels.com/hotel/020017");
+        Page<Room> cityList = bthRoomExtractor.run("http://www.bthhotels.com/hotel/S20001");
         cityList.getData().stream().forEach(city -> {
             System.out.println(JSON.toJSONString(city, true));
         });

@@ -53,19 +53,28 @@ public class BthHotelExtractor extends AbstractHotelExtractor {
                 String facVal = fac.attr("title");
                 facList.add(facVal);
             });
-            String location = element.attr("data-point");
+
             String hotelName = nameEle.attr("title");
             String address = addressEle.attr("title");
             Hotel hotel = new Hotel();
+            hotel.setFirstBrand("BthHotel");
+            String location = element.attr("data-point");
+            if(StringUtils.isNotEmpty(location)){
+                String[] xy = location.split(",");
+                if(xy.length == 2){
+                    Hotel.Coordinate coordinate = new Hotel.Coordinate();
+                    coordinate.setLat(Double.parseDouble(xy[0]));
+                    coordinate.setLng(Double.parseDouble(xy[1]));
+                    hotel.setCoordinate(coordinate);
+                }
+            }
             hotel.setHid(hotelId);
             hotel.setName(hotelName);
             hotel.setAddress(address);
             hotelDetailExtractor.setUrl(String.format(HOTEL_PAGE_URL, hotelId));
             hotelDetailExtractor.extractHotel(null, hotel);
-            if(hotel != null){
-                hotel.setHid(hotelId);
-                hotels.add(hotel);
-            }
+            hotel.setHid(hotelId);
+            hotels.add(hotel);
         });
         return page;
     }

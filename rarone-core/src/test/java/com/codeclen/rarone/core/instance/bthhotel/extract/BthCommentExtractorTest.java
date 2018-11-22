@@ -17,10 +17,10 @@ public class BthCommentExtractorTest {
     public void extract() throws Exception {
         Map<String, Object> hotelParams = new HashMap<>();
         BthCommentExtractor bthCommentExtractor = new  BthCommentExtractor();
-        hotelParams.put("hotelcd", "010088");
+        hotelParams.put("hotelcd", "S20001");
         hotelParams.put("pageNo",1);
         bthCommentExtractor.withUrl("http://www.bthhotels.com/HotelAct/dianping")
-                .withPipeline(new BthCommentPipeline("010088"))
+                .withPipeline(new BthCommentPipeline("S20001"))
                 .withParams(hotelParams)
                 .withPageNo("pageNo", 1)
                 .actionGet();
